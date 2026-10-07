@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Estadística - Pruebas de Hipótesis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function showForm() {
+            var selectedTest = document.getElementById("test_type").value;
+            var forms = document.querySelectorAll(".test-form");
+            
+            // Ocultar todos los formularios y deshabilitar sus inputs
+            forms.forEach(function(form) {
+                form.style.display = "none";
+                var inputs = form.querySelectorAll("input");
+                inputs.forEach(function(input) {
+                    input.disabled = true;
+                });
+            });
+            
+            // Mostrar solo el formulario seleccionado y habilitar sus inputs
+            if(selectedTest) {
+                var activeForm = document.getElementById("form_" + selectedTest);
+                activeForm.style.display = "block";
+                var activeInputs = activeForm.querySelectorAll("input");
+                activeInputs.forEach(function(input) {
+                    input.disabled = false;
+                });
+            }
+        }
+        
+        window.onload = function() {
+            showForm();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Pruebas de Hipótesis</h1>
+        <p>Selecciona el tipo de prueba estadística que deseas realizar:</p>
+        
+        <form action="/calculate" method="POST">
+            <div class="form-group">
+                <label for="test_type">Tipo de Prueba:</label>
+                <select name="test_type" id="test_type" onchange="showForm()" required>
+                    <option value="" disabled selected>-- Selecciona una prueba --</option>
+                    <option value="1_prop">Una Proporción</option>
+                    <option value="2_prop">Dos Proporciones</option>
+                    <option value="1_mean">Una Media</option>
+                    <option value="2_mean">Dos Medias (Independientes)</option>
+                    <option value="1_var">Una Varianza</option>
+                    <option value="2_var">Dos Varianzas</option>
+                </select>
+            </div>
+
+            <!-- Common Config -->
+            <div class="common-config">
+                <div class="form-group inline">
+                    <label for="alpha">Nivel de Significancia (Alfa):</label>
+                    <input type="number" step="0.001" name="alpha" value="0.05" required>
+                </div>
+                <div class="form-group inline">
+                    <label for="tail">Tipo de Prueba (Cola):</label>
+                    <select name="tail" required>
+                        <option value="two-sided">Dos colas (≠)</option>
+                        <option value="left">Cola Izquierda (<)</option>
+                        <option value="right">Cola Derecha (>)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Form: 1 Proportion -->
+            <div id="form_1_prop" class="test-form">
+                <h3>Datos para Una Proporción</h3>
+                <label>Número de Éxitos (x): <input type="number" step="1" name="x1" id="x1"></label>
+                <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_p"></label>
+                <label>Proporción Hipotética (p₀): <input type="number" step="any" name="p0" id="p0"></label>
+            </div>
+
+            <!-- Form: 2 Proportions -->
+            <div id="form_2_prop" class="test-form">
+                <h3>Datos para Dos Proporciones</h3>
+                <label>Éxitos Grupo 1 (x₁): <input type="number" step="1" name="x1" id="x1_2p"></label>
+                <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2p"></label>
+                <label>Éxitos Grupo 2 (x₂): <input type="number" step="1" name="x2" id="x2"></label>
+                <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2p"></label>
+            </div>
+
+            <!-- Form: 1 Mean -->
+            <div id="form_1_mean" class="test-form">
+                <h3>Datos para Una Media</h3>
+                <label>Media Muestral (x̄): <input type="number" step="any" name="x_bar1" id="x_bar1"></label>
+                <label>Desviación Estándar (s): <input type="number" step="any" name="s1" id="s1"></label>
+                <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_m"></label>
+                <label>Media Hipotética (μ₀): <input type="number" step="any" name="mu0" id="mu0"></label>
+            </div>
+
+            <!-- Form: 2 Means -->
+            <div id="form_2_mean" class="test-form">
+                <h3>Datos para Dos Medias</h3>
+                <label>Media Grupo 1 (x̄₁): <input type="number" step="any" name="x_bar1" id="x_bar1_2m"></label>
+                <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2m"></label>
+                <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2m"></label>
+                <label>Media Grupo 2 (x̄₂): <input type="number" step="any" name="x_bar2" id="x_bar2"></label>
+                <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2m"></label>
+                <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2m"></label>
+            </div>
+
+            <!-- Form: 1 Variance -->
+            <div id="form_1_var" class="test-form">
+                <h3>Datos para Una Varianza</h3>
+                <label>Desviación Estándar Muestral (s): <input type="number" step="any" name="s1" id="s1_v"></label>
+                <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_v"></label>
+                <label>Varianza Hipotética (σ₀²): <input type="number" step="any" name="sigma0_sq" id="sigma0_sq"></label>
+            </div>
+
+            <!-- Form: 2 Variances -->
+            <div id="form_2_var" class="test-form">
+                <h3>Datos para Dos Varianzas</h3>
+                <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2v"></label>
+                <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2v"></label>
+                <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2v"></label>
+                <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2v"></label>
+            </div>
+
+            <button type="submit" class="btn">Calcular Resultados</button>
+        </form>
+    </div>
+</body>
+</html>

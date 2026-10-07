@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Cálculo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Carga de MathJax para renderizar fórmulas matemáticas de manera elegante -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        {% if result.error %}
+            <h1 class="error-title">Ha ocurrido un error</h1>
+            <p class="error-msg">{{ result.error }}</p>
+            <a href="/" class="btn">Volver a la Calculadora</a>
+        {% else %}
+            <h1>{{ result.title }}</h1>
+            
+            <div class="card">
+                <h3>Datos Iniciales Ingresados</h3>
+                <ul>
+                    {% for key, val in result.inputs.items() %}
+                        <li><strong>{{ key }}:</strong> {{ val }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Procedimiento Paso a Paso</h3>
+                <div class="steps">
+                    {% for step in result.steps %}
+                        <p>{{ step | safe }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card results-card">
+                <h3>Resultados Matemáticos</h3>
+                <p class="math-result"><strong>Estadístico de Prueba ({{ result.statistic_name }}):</strong> {{ result.statistic_value | round(4) }}</p>
+                <p class="math-result"><strong>Valor p (p-value):</strong> {{ result.p_value | round(5) }}</p>
+            </div>
+
+            <div class="card conclusion-card">
+                <h3>Explicación y Conclusión</h3>
+                <p>{{ result.conclusion | safe }}</p>
+            </div>
+
+            <div class="actions">
+                <a href="/" class="btn">Realizar otro cálculo</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

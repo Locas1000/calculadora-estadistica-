@@ -1,0 +1,20 @@
+# Entornos Virtuales
+venv/
+.venv/
+env/
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de PyInstaller (Compilación)
+build/
+dist/
+*.spec
+
+# Entornos de desarrollo e IDEs
+.idea/
+.vscode/
+*.swp
+.DS_Store
