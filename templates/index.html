@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Estadística - Pruebas de Hipótesis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Carga de MathJax para renderizar fórmulas matemáticas elegantes -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         function showForm() {
             var selectedTest = document.getElementById("test_type").value;
@@ -22,110 +25,413 @@
             // Mostrar solo el formulario seleccionado y habilitar sus inputs
             if(selectedTest) {
                 var activeForm = document.getElementById("form_" + selectedTest);
-                activeForm.style.display = "block";
-                var activeInputs = activeForm.querySelectorAll("input");
-                activeInputs.forEach(function(input) {
-                    input.disabled = false;
-                });
+                if(activeForm) {
+                    activeForm.style.display = "block";
+                    var activeInputs = activeForm.querySelectorAll("input");
+                    activeInputs.forEach(function(input) {
+                        input.disabled = false;
+                    });
+                }
             }
-        }
-        
-        window.onload = function() {
-            showForm();
         }
     </script>
 </head>
 <body>
     <div class="container">
         <h1>Calculadora de Pruebas de Hipótesis</h1>
-        <p>Selecciona el tipo de prueba estadística que deseas realizar:</p>
         
-        <form action="/calculate" method="POST">
-            <div class="form-group">
-                <label for="test_type">Tipo de Prueba:</label>
-                <select name="test_type" id="test_type" onchange="showForm()" required>
-                    <option value="" disabled selected>-- Selecciona una prueba --</option>
-                    <option value="1_prop">Una Proporción</option>
-                    <option value="2_prop">Dos Proporciones</option>
-                    <option value="1_mean">Una Media</option>
-                    <option value="2_mean">Dos Medias (Independientes)</option>
-                    <option value="1_var">Una Varianza</option>
-                    <option value="2_var">Dos Varianzas</option>
-                </select>
-            </div>
+        <!-- Pestañas de Navegación -->
+        <div class="tabs">
+            <button class="tab-btn active" id="btn_hipotesis" onclick="switchTab('hipotesis')">Pruebas e Intervalos</button>
+            <button class="tab-btn" id="btn_herramientas" onclick="switchTab('herramientas')">Herramientas & Conversiones</button>
+            <button class="tab-btn" id="btn_teoria" onclick="switchTab('teoria')">📖 Diccionario de Teoría</button>
+        </div>
 
-            <!-- Common Config -->
-            <div class="common-config">
-                <div class="form-group inline">
-                    <label for="alpha">Nivel de Significancia (Alfa):</label>
-                    <input type="number" step="0.001" name="alpha" value="0.05" required>
-                </div>
-                <div class="form-group inline">
-                    <label for="tail">Tipo de Prueba (Cola):</label>
-                    <select name="tail" required>
-                        <option value="two-sided">Dos colas (≠)</option>
-                        <option value="left">Cola Izquierda (<)</option>
-                        <option value="right">Cola Derecha (>)</option>
+        <!-- PESTAÑA 1: PRUEBAS DE HIPÓTESIS -->
+        <div id="tab_hipotesis">
+            <p>Selecciona el tipo de prueba estadística que deseas realizar:</p>
+            <form action="/calculate" method="POST">
+                <div class="form-group">
+                    <label for="test_type">Tipo de Prueba:</label>
+                    <select name="test_type" id="test_type" onchange="showForm()" required>
+                        <option value="" disabled selected>-- Selecciona una prueba --</option>
+                        <option value="1_prop">Una Proporción</option>
+                        <option value="2_prop">Dos Proporciones</option>
+                        <option value="1_mean">Una Media</option>
+                        <option value="2_mean">Dos Medias (Independientes)</option>
+                        <option value="1_var">Una Varianza</option>
+                        <option value="2_var">Dos Varianzas</option>
                     </select>
                 </div>
+
+                <div class="common-config">
+                    <div class="form-group inline">
+                        <label for="alpha">Nivel de Significancia (Alfa):</label>
+                        <input type="number" step="0.001" name="alpha" value="0.05" required>
+                    </div>
+                    <div class="form-group inline">
+                        <label for="tail">Tipo de Prueba (Cola):</label>
+                        <select name="tail" required>
+                            <option value="two-sided">Dos colas (≠)</option>
+                            <option value="left">Cola Izquierda (<)</option>
+                            <option value="right">Cola Derecha (>)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="form_1_prop" class="test-form">
+                    <h3>Datos para Una Proporción</h3>
+                    <label>Número de Éxitos (x): <input type="number" step="1" name="x1" id="x1"></label>
+                    <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_p"></label>
+                    <label>Proporción Hipotética (p₀): <input type="number" step="any" name="p0" id="p0"></label>
+                </div>
+
+                <div id="form_2_prop" class="test-form">
+                    <h3>Datos para Dos Proporciones</h3>
+                    <label>Éxitos Grupo 1 (x₁): <input type="number" step="1" name="x1" id="x1_2p"></label>
+                    <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2p"></label>
+                    <label>Éxitos Grupo 2 (x₂): <input type="number" step="1" name="x2" id="x2"></label>
+                    <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2p"></label>
+                </div>
+
+                <div id="form_1_mean" class="test-form">
+                    <h3>Datos para Una Media</h3>
+                    <label>Media Muestral (x̄): <input type="number" step="any" name="x_bar1" id="x_bar1"></label>
+                    <label>Desviación Estándar (s): <input type="number" step="any" name="s1" id="s1"></label>
+                    <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_m"></label>
+                    <label>Media Hipotética (μ₀): <input type="number" step="any" name="mu0" id="mu0"></label>
+                </div>
+
+                <div id="form_2_mean" class="test-form">
+                    <h3>Datos para Dos Medias</h3>
+                    <label>Media Grupo 1 (x̄₁): <input type="number" step="any" name="x_bar1" id="x_bar1_2m"></label>
+                    <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2m"></label>
+                    <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2m"></label>
+                    <label>Media Grupo 2 (x̄₂): <input type="number" step="any" name="x_bar2" id="x_bar2"></label>
+                    <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2m"></label>
+                    <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2m"></label>
+                </div>
+
+                <div id="form_1_var" class="test-form">
+                    <h3>Datos para Una Varianza</h3>
+                    <label>Desviación Estándar Muestral (s): <input type="number" step="any" name="s1" id="s1_v"></label>
+                    <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_v"></label>
+                    <label>Varianza Hipotética (σ₀²): <input type="number" step="any" name="sigma0_sq" id="sigma0_sq"></label>
+                </div>
+
+                <div id="form_2_var" class="test-form">
+                    <h3>Datos para Dos Varianzas</h3>
+                    <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2v"></label>
+                    <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2v"></label>
+                    <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2v"></label>
+                    <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2v"></label>
+                </div>
+
+                <button type="submit" class="btn">Calcular Resultados</button>
+            </form>
+        </div>
+
+        <!-- PESTAÑA 2: HERRAMIENTAS Y CONVERSIONES -->
+        <div id="tab_herramientas" style="display:none;">
+            
+            <div class="tools-card">
+                <h3>1. De Varianza a Desviación Estándar</h3>
+                <p style="font-size: 0.9em; color:#555;">La calculadora principal pide Desviación Estándar (s). Si el problema te da la Varianza (s²), ponla aquí para convertirla.</p>
+                <div class="form-group">
+                    <input type="number" step="any" id="var_input" placeholder="Ej. 0.005 o 24" onkeyup="calcTools()">
+                </div>
+                <div class="tools-result">
+                    <strong>Desviación Estándar (s): </strong> <span id="tool_std_from_var">0.0000</span>
+                </div>
             </div>
 
-            <!-- Form: 1 Proportion -->
-            <div id="form_1_prop" class="test-form">
-                <h3>Datos para Una Proporción</h3>
-                <label>Número de Éxitos (x): <input type="number" step="1" name="x1" id="x1"></label>
-                <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_p"></label>
-                <label>Proporción Hipotética (p₀): <input type="number" step="any" name="p0" id="p0"></label>
+            <div class="tools-card">
+                <h3>2. Sacar datos de una Lista de Números</h3>
+                <p style="font-size: 0.9em; color:#555;">Pega aquí los números separados por coma (,). Ej: 12.4, 13.0, 11.8</p>
+                <div class="form-group">
+                    <textarea id="raw_data" rows="3" style="width:100%; padding:10px;" placeholder="12.4, 13.0, 11.8..." onkeyup="calcTools()"></textarea>
+                </div>
+                <div class="tools-result">
+                    <p><strong>Muestra (n): </strong> <span id="tool_n">0</span></p>
+                    <p><strong>Media (x̄): </strong> <span id="tool_mean">0.0000</span></p>
+                    <p><strong>Varianza (s²): </strong> <span id="tool_var">0.0000</span></p>
+                    <p><strong>Desviación Estándar (s): </strong> <span id="tool_std" style="color:var(--primary-color); font-weight:bold;">0.0000</span></p>
+                </div>
             </div>
 
-            <!-- Form: 2 Proportions -->
-            <div id="form_2_prop" class="test-form">
-                <h3>Datos para Dos Proporciones</h3>
-                <label>Éxitos Grupo 1 (x₁): <input type="number" step="1" name="x1" id="x1_2p"></label>
-                <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2p"></label>
-                <label>Éxitos Grupo 2 (x₂): <input type="number" step="1" name="x2" id="x2"></label>
-                <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2p"></label>
+        </div>
+
+        <!-- PESTAÑA 3: DICCIONARIO DE TEORÍA -->
+        <div id="tab_teoria" style="display:none;">
+            <p style="color: #555; margin-bottom: 15px;">
+                Consulta la base teórica completa, supuestos, formulación en LaTeX, intervalos de confianza y criterios de decisión de cada método estadístico implementado.
+            </p>
+
+            <!-- Barra de Búsqueda de Teoría -->
+            <div class="theory-search-bar">
+                <input type="text" id="theory_search" placeholder="🔍 Buscar por nombre, distribución (Z, t, Chi, F), supuestos o fórmulas..." oninput="filterTheory()">
             </div>
 
-            <!-- Form: 1 Mean -->
-            <div id="form_1_mean" class="test-form">
-                <h3>Datos para Una Media</h3>
-                <label>Media Muestral (x̄): <input type="number" step="any" name="x_bar1" id="x_bar1"></label>
-                <label>Desviación Estándar (s): <input type="number" step="any" name="s1" id="s1"></label>
-                <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_m"></label>
-                <label>Media Hipotética (μ₀): <input type="number" step="any" name="mu0" id="mu0"></label>
+            <!-- Etiquetas de Filtro Rápido -->
+            <div class="filter-tags">
+                <button type="button" class="filter-tag active" id="filter_tag_all" onclick="setFilter('all')">Todos</button>
+                <button type="button" class="filter-tag" id="filter_tag_conceptos" onclick="setFilter('conceptos')">Conceptos Clave</button>
+                <button type="button" class="filter-tag" id="filter_tag_Z" onclick="setFilter('Z')">Normal Z</button>
+                <button type="button" class="filter-tag" id="filter_tag_t" onclick="setFilter('t')">t-Student</button>
+                <button type="button" class="filter-tag" id="filter_tag_chi" onclick="setFilter('chi')">Chi-Cuadrada (χ²)</button>
+                <button type="button" class="filter-tag" id="filter_tag_F" onclick="setFilter('F')">F de Fisher</button>
             </div>
 
-            <!-- Form: 2 Means -->
-            <div id="form_2_mean" class="test-form">
-                <h3>Datos para Dos Medias</h3>
-                <label>Media Grupo 1 (x̄₁): <input type="number" step="any" name="x_bar1" id="x_bar1_2m"></label>
-                <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2m"></label>
-                <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2m"></label>
-                <label>Media Grupo 2 (x̄₂): <input type="number" step="any" name="x_bar2" id="x_bar2"></label>
-                <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2m"></label>
-                <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2m"></label>
+            <!-- SECCIÓN 1: CONCEPTOS FUNDAMENTALES -->
+            <div id="section_conceptos">
+                <div class="section-title">📌 Conceptos Fundamentales de Pruebas de Hipótesis</div>
+                <div class="concept-grid">
+                    {% if theory_concepts %}
+                        {% for key, concept in theory_concepts.items() %}
+                        <div class="concept-card">
+                            <h4>{{ concept.title }}</h4>
+                            <p>{{ concept.description }}</p>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- Form: 1 Variance -->
-            <div id="form_1_var" class="test-form">
-                <h3>Datos para Una Varianza</h3>
-                <label>Desviación Estándar Muestral (s): <input type="number" step="any" name="s1" id="s1_v"></label>
-                <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_v"></label>
-                <label>Varianza Hipotética (σ₀²): <input type="number" step="any" name="sigma0_sq" id="sigma0_sq"></label>
+            <!-- SECCIÓN 2: DICCIONARIO DE MÉTODOS -->
+            <div id="section_metodos">
+                <div class="section-title">📚 Métodos Estadísticos Detallados</div>
+                
+                {% if theory_methods %}
+                    {% for key, method in theory_methods.items() %}
+                    <div class="theory-card" id="teoria_{{ method.id }}" data-dist="{{ method.distribution }}" data-name="{{ method.title }}">
+                        <div class="theory-card-header">
+                            <h3>{{ method.title }}</h3>
+                            <span class="badge {{ method.badge_class }}">{{ method.distribution }}</span>
+                        </div>
+
+                        <div class="theory-section-block">
+                            <h4>🎯 Objetivo y Cuándo Utilizar</h4>
+                            <p><strong>Objetivo:</strong> {{ method.objective }}</p>
+                            <p style="margin-top: 5px;"><strong>Aplicación:</strong> {{ method.when_to_use }}</p>
+                        </div>
+
+                        <div class="theory-section-block">
+                            <h4>📋 Supuestos y Condiciones Previas</h4>
+                            <ul>
+                                {% for assumption in method.assumptions %}
+                                <li>{{ assumption }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="theory-section-block">
+                            <h4>⚖️ Planteamiento de Hipótesis</h4>
+                            <div class="hypotheses-box">
+                                <div>• <strong>Dos Colas (Bilateral):</strong> \( {{ method.hypotheses.two_sided }} \)</div>
+                                <div>• <strong>Cola Izquierda (Unilateral):</strong> \( {{ method.hypotheses.left_tail }} \)</div>
+                                <div>• <strong>Cola Derecha (Unilateral):</strong> \( {{ method.hypotheses.right_tail }} \)</div>
+                            </div>
+                        </div>
+
+                        <div class="theory-section-block">
+                            <h4>📐 Estadístico de Prueba</h4>
+                            <div class="formula-box">
+                                \[ {{ method.formula_latex }} \]
+                            </div>
+                            <p class="formula-subtext">{{ method.formula_explanation | safe }}</p>
+                            {% if method.standard_error_formula and method.standard_error_formula.startswith('SE') %}
+                            <p style="margin-top: 5px;"><strong>Error Estándar:</strong> \( {{ method.standard_error_formula }} \)</p>
+                            {% endif %}
+                            {% if method.degrees_of_freedom_formula %}
+                            <div style="margin-top: 8px;">
+                                <strong>Grados de Libertad (Welch-Satterthwaite):</strong>
+                                <div class="formula-box" style="margin: 5px 0;">
+                                    \[ {{ method.degrees_of_freedom_formula }} \]
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="theory-section-block">
+                            <h4>🔒 Intervalo de Confianza Asociado ({(1 - α) * 100}%)</h4>
+                            <div class="formula-box">
+                                \[ {{ method.confidence_interval_formula }} \]
+                            </div>
+                            <p class="formula-subtext">{{ method.confidence_interval_note }}</p>
+                        </div>
+
+                        <div class="theory-section-block">
+                            <h4>🚦 Regla de Decisión</h4>
+                            <p>{{ method.decision_rule }}</p>
+                        </div>
+
+                        <div class="example-box">
+                            <strong>💡 Ejemplo Práctico:</strong>
+                            <p style="margin: 5px 0 0 0;">{{ method.example }}</p>
+                        </div>
+
+                        <button type="button" class="btn-use-method" onclick="useMethod('{{ method.id }}')">
+                            🚀 Usar este método en la calculadora
+                        </button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
             </div>
 
-            <!-- Form: 2 Variances -->
-            <div id="form_2_var" class="test-form">
-                <h3>Datos para Dos Varianzas</h3>
-                <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2v"></label>
-                <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2v"></label>
-                <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2v"></label>
-                <label>Muestra Grupo 2 (n₂): <input type="number" step="1" name="n2" id="n2_2v"></label>
-            </div>
+        </div>
 
-            <button type="submit" class="btn">Calcular Resultados</button>
-        </form>
     </div>
+
+    <script>
+        function switchTab(tabName) {
+            var tabHipotesis = document.getElementById('tab_hipotesis');
+            var tabHerramientas = document.getElementById('tab_herramientas');
+            var tabTeoria = document.getElementById('tab_teoria');
+            
+            var btnHipotesis = document.getElementById('btn_hipotesis');
+            var btnHerramientas = document.getElementById('btn_herramientas');
+            var btnTeoria = document.getElementById('btn_teoria');
+
+            if (tabHipotesis) tabHipotesis.style.display = (tabName === 'hipotesis') ? 'block' : 'none';
+            if (tabHerramientas) tabHerramientas.style.display = (tabName === 'herramientas') ? 'block' : 'none';
+            if (tabTeoria) tabTeoria.style.display = (tabName === 'teoria') ? 'block' : 'none';
+            
+            if (btnHipotesis) btnHipotesis.className = (tabName === 'hipotesis') ? 'tab-btn active' : 'tab-btn';
+            if (btnHerramientas) btnHerramientas.className = (tabName === 'herramientas') ? 'tab-btn active' : 'tab-btn';
+            if (btnTeoria) btnTeoria.className = (tabName === 'teoria') ? 'tab-btn active' : 'tab-btn';
+
+            if (tabName === 'teoria' && window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        function useMethod(methodId) {
+            switchTab('hipotesis');
+            var select = document.getElementById("test_type");
+            if (select) {
+                select.value = methodId;
+                showForm();
+            }
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        var currentFilterTag = 'all';
+
+        function setFilter(tag) {
+            currentFilterTag = tag;
+            var filterBtns = document.querySelectorAll('.filter-tag');
+            filterBtns.forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            var activeBtn = document.getElementById('filter_tag_' + tag);
+            if (activeBtn) activeBtn.classList.add('active');
+            filterTheory();
+        }
+
+        function filterTheory() {
+            var searchInput = document.getElementById('theory_search');
+            var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            var cards = document.querySelectorAll('.theory-card');
+            var conceptsSection = document.getElementById('section_conceptos');
+            var methodsSection = document.getElementById('section_metodos');
+
+            // Visibilidad de conceptos
+            if (currentFilterTag === 'all' || currentFilterTag === 'conceptos') {
+                if (conceptsSection) conceptsSection.style.display = 'block';
+            } else {
+                if (conceptsSection) conceptsSection.style.display = 'none';
+            }
+
+            // Visibilidad de métodos
+            if (currentFilterTag === 'conceptos') {
+                if (methodsSection) methodsSection.style.display = 'none';
+            } else {
+                if (methodsSection) methodsSection.style.display = 'block';
+            }
+
+            cards.forEach(function(card) {
+                var dist = (card.getAttribute('data-dist') || '').toLowerCase();
+                var tagMatch = false;
+
+                if (currentFilterTag === 'all') {
+                    tagMatch = true;
+                } else if (currentFilterTag === 'Z' && dist.includes('normal')) {
+                    tagMatch = true;
+                } else if (currentFilterTag === 't' && dist.includes('student')) {
+                    tagMatch = true;
+                } else if (currentFilterTag === 'chi' && dist.includes('chi')) {
+                    tagMatch = true;
+                } else if (currentFilterTag === 'F' && dist.includes('fisher')) {
+                    tagMatch = true;
+                }
+
+                var text = card.innerText.toLowerCase();
+                var textMatch = (query === '' || text.includes(query));
+
+                card.style.display = (tagMatch && textMatch) ? 'block' : 'none';
+            });
+        }
+
+        function calcTools() {
+            // Conversor Varianza a Desviación
+            let varInput = document.getElementById("var_input").value;
+            if(varInput.trim() !== "") {
+                let v = parseFloat(varInput);
+                if(!isNaN(v) && v >= 0) {
+                    document.getElementById("tool_std_from_var").innerText = Math.sqrt(v).toFixed(6);
+                }
+            } else {
+                document.getElementById("tool_std_from_var").innerText = "0.0000";
+            }
+
+            // Lista a Estadísticas
+            let rawData = document.getElementById("raw_data").value;
+            if(rawData.trim() !== "") {
+                let nums = rawData.split(",")
+                                  .map(n => parseFloat(n.trim()))
+                                  .filter(n => !isNaN(n));
+                if(nums.length > 1) {
+                    let n = nums.length;
+                    let sum = nums.reduce((a, b) => a + b, 0);
+                    let mean = sum / n;
+                    let sqSum = nums.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
+                    let variance = sqSum / (n - 1); // Varianza Muestral
+                    let stdDev = Math.sqrt(variance);
+
+                    document.getElementById("tool_n").innerText = n;
+                    document.getElementById("tool_mean").innerText = mean.toFixed(4);
+                    document.getElementById("tool_var").innerText = variance.toFixed(4);
+                    document.getElementById("tool_std").innerText = stdDev.toFixed(4);
+                }
+            }
+        }
+
+        window.onload = function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var initialTab = "{{ initial_tab|default('hipotesis') }}";
+            var paramTab = urlParams.get('tab') || initialTab;
+            var hash = window.location.hash;
+            var methodParam = "{{ selected_method|default('') }}" || urlParams.get('method');
+
+            if (paramTab === 'teoria' || (hash && hash.startsWith('#teoria'))) {
+                switchTab('teoria');
+                if (methodParam || (hash && hash.includes('_'))) {
+                    var targetId = methodParam ? ('teoria_' + methodParam) : hash.replace('#', '');
+                    setTimeout(function() {
+                        var targetEl = document.getElementById(targetId);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+                        }
+                    }, 400);
+                }
+            } else if (paramTab === 'herramientas') {
+                switchTab('herramientas');
+            } else {
+                switchTab('hipotesis');
+            }
+
+            showForm();
+        }
+    </script>
 </body>
 </html>

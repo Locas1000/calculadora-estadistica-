@@ -4,6 +4,7 @@ import threading
 import webbrowser
 from flask import Flask, render_template, request
 from form_handler import process_test_request
+from theory_data import THEORY_DICTIONARY, GENERAL_CONCEPTS
 
 def create_app():
     """Fábrica de la aplicación Flask."""
@@ -20,7 +21,23 @@ app = create_app()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template(
+        'index.html',
+        theory_methods=THEORY_DICTIONARY,
+        theory_concepts=GENERAL_CONCEPTS,
+        initial_tab=request.args.get('tab', 'hipotesis'),
+        selected_method=request.args.get('method', '')
+    )
+
+@app.route('/teoria')
+def teoria():
+    return render_template(
+        'index.html',
+        theory_methods=THEORY_DICTIONARY,
+        theory_concepts=GENERAL_CONCEPTS,
+        initial_tab='teoria',
+        selected_method=request.args.get('method', '')
+    )
 
 @app.route('/calculate', methods=['POST'])
 def calculate():

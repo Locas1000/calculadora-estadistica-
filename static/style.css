@@ -17,7 +17,7 @@ body {
 }
 
 .container {
-    max-width: 800px;
+    max-width: 920px;
     margin: 0 auto;
     background: var(--card-bg);
     padding: 30px;
@@ -174,3 +174,321 @@ ul li {
 .actions {
     margin-top: 30px;
 }
+
+/* Estilos para Pestañas y Herramientas */
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ccc;
+}
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+    color: #777;
+    transition: all 0.3s;
+}
+.tab-btn:hover {
+    color: var(--primary-color);
+}
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--secondary-color);
+    font-weight: bold;
+}
+.tools-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #f39c12;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+.tools-result {
+    margin-top: 15px;
+    padding: 10px;
+    background: #fdfbf7;
+    border: 1px dashed #f39c12;
+    font-size: 1.1em;
+}
+.tools-result p {
+    margin: 5px 0;
+}
+
+/* =========================================
+   ESTILOS PARA EL DICCIONARIO DE TEORÍA
+   ========================================= */
+
+.theory-search-bar {
+    margin: 20px 0 15px 0;
+}
+
+.theory-search-bar input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.theory-search-bar input:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 25px;
+}
+
+.filter-tag {
+    background: #eef2f5;
+    border: 1px solid #ccd5dc;
+    color: #495057;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-tag:hover {
+    background: #dfe6ec;
+    color: #212529;
+}
+
+.filter-tag.active {
+    background: var(--secondary-color);
+    color: #ffffff;
+    border-color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 1.4em;
+    color: var(--primary-color);
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+    margin: 25px 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.concept-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #27ae60;
+    padding: 16px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.concept-card h4 {
+    margin: 0 0 8px 0;
+    color: #1e293b;
+    font-size: 1.05em;
+}
+
+.concept-card p {
+    margin: 0;
+    font-size: 0.93em;
+    color: #475569;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.theory-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.theory-card:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.theory-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 12px;
+}
+
+.theory-card-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.25em;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 0.82em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-z {
+    background-color: #ebf5fb;
+    color: #2980b9;
+    border: 1px solid #aed6f1;
+}
+
+.badge-t {
+    background-color: #e8f8f5;
+    color: #16a085;
+    border: 1px solid #a3e4d7;
+}
+
+.badge-chi {
+    background-color: #fef9e7;
+    color: #d35400;
+    border: 1px solid #f9e79f;
+}
+
+.badge-f {
+    background-color: #f4ecf7;
+    color: #8e44ad;
+    border: 1px solid #d2b4de;
+}
+
+.theory-section-block {
+    margin-bottom: 14px;
+}
+
+.theory-section-block h4 {
+    margin: 0 0 6px 0;
+    font-size: 0.98em;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.theory-section-block p, .theory-section-block ul {
+    margin: 0;
+    font-size: 0.95em;
+    color: #475569;
+}
+
+.theory-section-block ul {
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+.theory-section-block ul li {
+    padding: 3px 0;
+    border-bottom: none;
+}
+
+.formula-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid var(--secondary-color);
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-size: 1.05em;
+    overflow-x: auto;
+}
+
+.formula-subtext {
+    font-size: 0.88em;
+    color: #64748b;
+    margin-top: 6px !important;
+}
+
+.hypotheses-box {
+    background: #f1f5f9;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin: 8px 0;
+    font-size: 0.95em;
+}
+
+.hypotheses-box div {
+    padding: 3px 0;
+}
+
+.example-box {
+    background: #fdfbf7;
+    border: 1px dashed #f39c12;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 12px 0;
+    font-size: 0.93em;
+}
+
+.example-box strong {
+    color: #d35400;
+}
+
+.btn-use-method {
+    display: inline-block;
+    background: #27ae60;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: background 0.2s;
+    width: auto;
+}
+
+.btn-use-method:hover {
+    background: #219653;
+}
+
+.btn-secondary {
+    background: #7f8c8d;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background: #636e72;
+}
+
+.actions-group {
+    display: flex;
+    gap: 15px;
+}
+
+.actions-group .btn {
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    .concept-grid {
+        grid-template-columns: 1fr;
+    }
+    .actions-group {
+        flex-direction: column;
+    }
+}
+

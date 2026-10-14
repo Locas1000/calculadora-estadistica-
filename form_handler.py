@@ -27,33 +27,30 @@ def process_test_request(form_data):
     tail = form_data.get('tail', 'two-sided')
 
     if test_type == '1_prop':
-        return test_one_proportion(
+        res = test_one_proportion(
             get_float(form_data, 'x1'),
             get_float(form_data, 'n1'),
             get_float(form_data, 'p0'),
             alpha, tail
         )
-        
     elif test_type == '2_prop':
-        return test_two_proportions(
+        res = test_two_proportions(
             get_float(form_data, 'x1'),
             get_float(form_data, 'n1'),
             get_float(form_data, 'x2'),
             get_float(form_data, 'n2'),
             alpha, tail
         )
-        
     elif test_type == '1_mean':
-        return test_one_mean(
+        res = test_one_mean(
             get_float(form_data, 'x_bar1'),
             get_float(form_data, 's1'),
             get_float(form_data, 'n1'),
             get_float(form_data, 'mu0'),
             alpha, tail
         )
-        
     elif test_type == '2_mean':
-        return test_two_means(
+        res = test_two_means(
             get_float(form_data, 'x_bar1'),
             get_float(form_data, 's1'),
             get_float(form_data, 'n1'),
@@ -62,23 +59,24 @@ def process_test_request(form_data):
             get_float(form_data, 'n2'),
             alpha, tail
         )
-        
     elif test_type == '1_var':
-        return test_one_variance(
+        res = test_one_variance(
             get_float(form_data, 's1'),
             get_float(form_data, 'n1'),
             get_float(form_data, 'sigma0_sq'),
             alpha, tail
         )
-        
     elif test_type == '2_var':
-        return test_two_variances(
+        res = test_two_variances(
             get_float(form_data, 's1'),
             get_float(form_data, 'n1'),
             get_float(form_data, 's2'),
             get_float(form_data, 'n2'),
             alpha, tail
         )
-        
     else:
         raise ValueError("Tipo de prueba inválida o no seleccionada.")
+
+    res['method_id'] = test_type
+    res['tail'] = tail
+    return res
