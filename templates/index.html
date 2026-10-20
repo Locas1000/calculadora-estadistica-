@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora Estadística - Pruebas de Hipótesis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Carga de MathJax para renderizar fórmulas matemáticas elegantes -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         function showForm() {
             var selectedTest = document.getElementById("test_type").value;
@@ -42,12 +39,12 @@
         
         <!-- Pestañas de Navegación -->
         <div class="tabs">
-            <button class="tab-btn active" id="btn_hipotesis" onclick="switchTab('hipotesis')">Pruebas e Intervalos</button>
+            <button class="tab-btn active" id="btn_hipotesis" onclick="switchTab('hipotesis')">Calculadora</button>
+            <button class="tab-btn" id="btn_identificar" onclick="switchTab('identificar')">¿Cómo identificar cuándo usarlo?</button>
             <button class="tab-btn" id="btn_herramientas" onclick="switchTab('herramientas')">Herramientas & Conversiones</button>
-            <button class="tab-btn" id="btn_teoria" onclick="switchTab('teoria')">📖 Diccionario de Teoría</button>
         </div>
 
-        <!-- PESTAÑA 1: PRUEBAS DE HIPÓTESIS -->
+        <!-- PESTAÑA 1: CALCULADORA DE PRUEBAS DE HIPÓTESIS -->
         <div id="tab_hipotesis">
             <p>Selecciona el tipo de prueba estadística que deseas realizar:</p>
             <form action="/calculate" method="POST">
@@ -73,14 +70,17 @@
                         <label for="tail">Tipo de Prueba (Cola):</label>
                         <select name="tail" required>
                             <option value="two-sided">Dos colas (≠)</option>
-                            <option value="left">Cola Izquierda (<)</option>
-                            <option value="right">Cola Derecha (>)</option>
+                            <option value="left">Cola Izquierda (&lt;)</option>
+                            <option value="right">Cola Derecha (&gt;)</option>
                         </select>
                     </div>
                 </div>
 
                 <div id="form_1_prop" class="test-form">
                     <h3>Datos para Una Proporción</h3>
+                    <div class="when-hint">
+                        <strong>💡 ¿Cuándo usarlo?</strong> Cuando hay <strong>1 solo grupo</strong> y el problema habla de <strong>porcentajes, proporciones o conteo de éxitos</strong> (ej. "390 de 500 usuarios están satisfechos", "¿es diferente del 80%?").
+                    </div>
                     <label>Número de Éxitos (x): <input type="number" step="1" name="x1" id="x1"></label>
                     <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_p"></label>
                     <label>Proporción Hipotética (p₀): <input type="number" step="any" name="p0" id="p0"></label>
@@ -88,6 +88,9 @@
 
                 <div id="form_2_prop" class="test-form">
                     <h3>Datos para Dos Proporciones</h3>
+                    <div class="when-hint">
+                        <strong>💡 ¿Cuándo usarlo?</strong> Cuando comparas <strong>2 grupos independientes</strong> midiendo <strong>porcentajes, tasas o conteo de éxitos</strong> en cada uno (ej. "180 de 250 en Plataforma A vs 150 de 240 en Plataforma B").
+                    </div>
                     <label>Éxitos Grupo 1 (x₁): <input type="number" step="1" name="x1" id="x1_2p"></label>
                     <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2p"></label>
                     <label>Éxitos Grupo 2 (x₂): <input type="number" step="1" name="x2" id="x2"></label>
@@ -96,6 +99,9 @@
 
                 <div id="form_1_mean" class="test-form">
                     <h3>Datos para Una Media</h3>
+                    <div class="when-hint">
+                        <strong>💡 ¿Cuándo usarlo?</strong> Cuando hay <strong>1 solo grupo</strong> y el problema habla de <strong>promedio o media</strong> (x̄) junto con una desviación estándar muestral (s) (ej. "el rendimiento promedio en 30 días fue 50 con desviación de 8").
+                    </div>
                     <label>Media Muestral (x̄): <input type="number" step="any" name="x_bar1" id="x_bar1"></label>
                     <label>Desviación Estándar (s): <input type="number" step="any" name="s1" id="s1"></label>
                     <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_m"></label>
@@ -104,6 +110,9 @@
 
                 <div id="form_2_mean" class="test-form">
                     <h3>Datos para Dos Medias</h3>
+                    <div class="when-hint">
+                        <strong>💡 ¿Cuándo usarlo?</strong> Cuando comparas el <strong>promedio o media de 2 grupos independientes</strong> (x̄₁ y x̄₂), cada uno con su desviación estándar (s₁, s₂) y tamaño de muestra (n₁, n₂).
+                    </div>
                     <label>Media Grupo 1 (x̄₁): <input type="number" step="any" name="x_bar1" id="x_bar1_2m"></label>
                     <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2m"></label>
                     <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2m"></label>
@@ -114,6 +123,9 @@
 
                 <div id="form_1_var" class="test-form">
                     <h3>Datos para Una Varianza</h3>
+                    <div class="when-hint">
+                        <strong>💡 ¿Cuándo usarlo?</strong> Cuando hay <strong>1 solo grupo</strong> y el problema evalúa específicamente la <strong>varianza, desviación estándar, volatilidad, dispersión o riesgo</strong> (no el promedio).
+                    </div>
                     <label>Desviación Estándar Muestral (s): <input type="number" step="any" name="s1" id="s1_v"></label>
                     <label>Tamaño de Muestra (n): <input type="number" step="1" name="n1" id="n1_v"></label>
                     <label>Varianza Hipotética (σ₀²): <input type="number" step="any" name="sigma0_sq" id="sigma0_sq"></label>
@@ -121,6 +133,9 @@
 
                 <div id="form_2_var" class="test-form">
                     <h3>Datos para Dos Varianzas</h3>
+                    <div class="when-hint">
+                        <strong>💡 ¿Cuándo usarlo?</strong> Cuando comparas la <strong>varianza, volatilidad, riesgo o dispersión entre 2 grupos</strong> (ej. "cociente de varianzas entre Bono P y Bono Q").
+                    </div>
                     <label>Desv. Est. Grupo 1 (s₁): <input type="number" step="any" name="s1" id="s1_2v"></label>
                     <label>Muestra Grupo 1 (n₁): <input type="number" step="1" name="n1" id="n1_2v"></label>
                     <label>Desv. Est. Grupo 2 (s₂): <input type="number" step="any" name="s2" id="s2_2v"></label>
@@ -131,7 +146,74 @@
             </form>
         </div>
 
-        <!-- PESTAÑA 2: HERRAMIENTAS Y CONVERSIONES -->
+        <!-- PESTAÑA 2: CÓMO IDENTIFICAR CUÁNDO USARLO -->
+        <div id="tab_identificar" style="display:none;">
+            <div class="guide-intro">
+                <h3>Pasos rápidos para identificar qué prueba usar</h3>
+                <ol>
+                    <li><strong>¿Cuántos grupos o muestras menciona el problema?</strong> ¿Analizas <strong>1 sola muestra</strong> contra un valor fijo o comparas <strong>2 muestras</strong> entre sí?</li>
+                    <li><strong>¿Qué te pide estimar o probar la pregunta?</strong>
+                        <ul>
+                            <li>Si habla de <strong>porcentaje, proporción, fracción o conteo de éxitos</strong> ("x de cada n") 👉 <strong>Proporción</strong>.</li>
+                            <li>Si habla de <strong>promedio, media, gasto medio, rendimiento promedio</strong> 👉 <strong>Media</strong>.</li>
+                            <li>Si habla de <strong>varianza, desviación estándar, volatilidad, dispersión o cociente de varianzas</strong> 👉 <strong>Varianza</strong>.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="identify-grid">
+                <div class="identify-card">
+                    <h3>1. Una Proporción</h3>
+                    <p><strong>¿Cuándo usarlo?</strong> Tienes <strong>1 sola muestra</strong> y quieres saber si el porcentaje o proporción de personas/objetos que cumplen una condición coincide con un valor esperado.</p>
+                    <p><strong>Palabras clave:</strong> "porcentaje", "proporción", "tasa de satisfacción", "x de n usuarios/equipos".</p>
+                    <p><strong>Datos que te dan:</strong> Éxitos (x), tamaño de muestra (n) y proporción de referencia (p₀). <em>Nota: si solo piden intervalo de confianza, puedes poner cualquier p₀ entre 0 y 1 (ej. 0.5).</em></p>
+                    <button type="button" class="btn-use-method" onclick="useMethod('1_prop')">Ir a Una Proporción</button>
+                </div>
+
+                <div class="identify-card">
+                    <h3>2. Dos Proporciones</h3>
+                    <p><strong>¿Cuándo usarlo?</strong> Comparas <strong>2 muestras independientes</strong> (ej. A vs B) para ver si tienen el mismo porcentaje o proporción de éxito.</p>
+                    <p><strong>Palabras clave:</strong> "diferencia de proporciones", "comparar porcentaje entre plataforma A y B", "x₁ de n₁ vs x₂ de n₂".</p>
+                    <p><strong>Datos que te dan:</strong> Éxitos y muestra del grupo 1 (x₁, n₁) y éxitos y muestra del grupo 2 (x₂, n₂).</p>
+                    <button type="button" class="btn-use-method" onclick="useMethod('2_prop')">Ir a Dos Proporciones</button>
+                </div>
+
+                <div class="identify-card">
+                    <h3>3. Una Media</h3>
+                    <p><strong>¿Cuándo usarlo?</strong> Tienes <strong>1 sola muestra</strong> de datos numéricos y te preguntan por su <strong>promedio o media</strong>.</p>
+                    <p><strong>Palabras clave:</strong> "promedio", "media muestral", "rendimiento medio", "gasto promedio".</p>
+                    <p><strong>Datos que te dan:</strong> Media muestral (x̄), desviación estándar (s) o varianza, tamaño de muestra (n) y media hipotética (μ₀). <em>Nota: si solo buscas el intervalo de confianza, ingresa 0 en μ₀.</em></p>
+                    <button type="button" class="btn-use-method" onclick="useMethod('1_mean')">Ir a Una Media</button>
+                </div>
+
+                <div class="identify-card">
+                    <h3>4. Dos Medias (Independientes)</h3>
+                    <p><strong>¿Cuándo usarlo?</strong> Comparas el <strong>promedio de 2 grupos distintos</strong> para saber si sus medias son iguales o diferentes.</p>
+                    <p><strong>Palabras clave:</strong> "diferencia de medias", "comparar el promedio del grupo 1 y grupo 2".</p>
+                    <p><strong>Datos que te dan:</strong> Media, desviación estándar y muestra de ambos grupos (x̄₁, s₁, n₁ y x̄₂, s₂, n₂).</p>
+                    <button type="button" class="btn-use-method" onclick="useMethod('2_mean')">Ir a Dos Medias</button>
+                </div>
+
+                <div class="identify-card">
+                    <h3>5. Una Varianza</h3>
+                    <p><strong>¿Cuándo usarlo?</strong> Tienes <strong>1 sola muestra</strong> y la pregunta pide el intervalo o prueba sobre la <strong>varianza (σ²)</strong> o dispersión (aunque el problema mencione la media como distractor o te dé una lista de números).</p>
+                    <p><strong>Palabras clave:</strong> "intervalo para la varianza", "varianza poblacional", "volatilidad", "riesgo".</p>
+                    <p><strong>Datos que te dan:</strong> Desviación estándar (s) —o varianza s² que debes pasar a desviación en la pestaña de Herramientas— o una lista de datos, tamaño (n) y varianza hipotética (σ₀², pon 1 si solo quieres el intervalo).</p>
+                    <button type="button" class="btn-use-method" onclick="useMethod('1_var')">Ir a Una Varianza</button>
+                </div>
+
+                <div class="identify-card">
+                    <h3>6. Dos Varianzas (Cociente)</h3>
+                    <p><strong>¿Cuándo usarlo?</strong> Comparas la <strong>variabilidad, volatilidad o varianza de 2 grupos</strong> (por ejemplo, dos bonos, dos fondos o dos acciones).</p>
+                    <p><strong>Palabras clave:</strong> "cociente de varianzas", "razón de varianzas", "comparar volatilidad/riesgo entre A y B".</p>
+                    <p><strong>Datos que te dan:</strong> Desviación estándar (o varianza/lista de números) y tamaño de muestra de dos grupos (s₁, n₁ y s₂, n₂).</p>
+                    <button type="button" class="btn-use-method" onclick="useMethod('2_var')">Ir a Dos Varianzas</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA 3: HERRAMIENTAS Y CONVERSIONES -->
         <div id="tab_herramientas" style="display:none;">
             
             <div class="tools-card">
@@ -161,148 +243,25 @@
 
         </div>
 
-        <!-- PESTAÑA 3: DICCIONARIO DE TEORÍA -->
-        <div id="tab_teoria" style="display:none;">
-            <p style="color: #555; margin-bottom: 15px;">
-                Consulta la base teórica completa, supuestos, formulación en LaTeX, intervalos de confianza y criterios de decisión de cada método estadístico implementado.
-            </p>
-
-            <!-- Barra de Búsqueda de Teoría -->
-            <div class="theory-search-bar">
-                <input type="text" id="theory_search" placeholder="🔍 Buscar por nombre, distribución (Z, t, Chi, F), supuestos o fórmulas..." oninput="filterTheory()">
-            </div>
-
-            <!-- Etiquetas de Filtro Rápido -->
-            <div class="filter-tags">
-                <button type="button" class="filter-tag active" id="filter_tag_all" onclick="setFilter('all')">Todos</button>
-                <button type="button" class="filter-tag" id="filter_tag_conceptos" onclick="setFilter('conceptos')">Conceptos Clave</button>
-                <button type="button" class="filter-tag" id="filter_tag_Z" onclick="setFilter('Z')">Normal Z</button>
-                <button type="button" class="filter-tag" id="filter_tag_t" onclick="setFilter('t')">t-Student</button>
-                <button type="button" class="filter-tag" id="filter_tag_chi" onclick="setFilter('chi')">Chi-Cuadrada (χ²)</button>
-                <button type="button" class="filter-tag" id="filter_tag_F" onclick="setFilter('F')">F de Fisher</button>
-            </div>
-
-            <!-- SECCIÓN 1: CONCEPTOS FUNDAMENTALES -->
-            <div id="section_conceptos">
-                <div class="section-title">📌 Conceptos Fundamentales de Pruebas de Hipótesis</div>
-                <div class="concept-grid">
-                    {% if theory_concepts %}
-                        {% for key, concept in theory_concepts.items() %}
-                        <div class="concept-card">
-                            <h4>{{ concept.title }}</h4>
-                            <p>{{ concept.description }}</p>
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- SECCIÓN 2: DICCIONARIO DE MÉTODOS -->
-            <div id="section_metodos">
-                <div class="section-title">📚 Métodos Estadísticos Detallados</div>
-                
-                {% if theory_methods %}
-                    {% for key, method in theory_methods.items() %}
-                    <div class="theory-card" id="teoria_{{ method.id }}" data-dist="{{ method.distribution }}" data-name="{{ method.title }}">
-                        <div class="theory-card-header">
-                            <h3>{{ method.title }}</h3>
-                            <span class="badge {{ method.badge_class }}">{{ method.distribution }}</span>
-                        </div>
-
-                        <div class="theory-section-block">
-                            <h4>🎯 Objetivo y Cuándo Utilizar</h4>
-                            <p><strong>Objetivo:</strong> {{ method.objective }}</p>
-                            <p style="margin-top: 5px;"><strong>Aplicación:</strong> {{ method.when_to_use }}</p>
-                        </div>
-
-                        <div class="theory-section-block">
-                            <h4>📋 Supuestos y Condiciones Previas</h4>
-                            <ul>
-                                {% for assumption in method.assumptions %}
-                                <li>{{ assumption }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-
-                        <div class="theory-section-block">
-                            <h4>⚖️ Planteamiento de Hipótesis</h4>
-                            <div class="hypotheses-box">
-                                <div>• <strong>Dos Colas (Bilateral):</strong> \( {{ method.hypotheses.two_sided }} \)</div>
-                                <div>• <strong>Cola Izquierda (Unilateral):</strong> \( {{ method.hypotheses.left_tail }} \)</div>
-                                <div>• <strong>Cola Derecha (Unilateral):</strong> \( {{ method.hypotheses.right_tail }} \)</div>
-                            </div>
-                        </div>
-
-                        <div class="theory-section-block">
-                            <h4>📐 Estadístico de Prueba</h4>
-                            <div class="formula-box">
-                                \[ {{ method.formula_latex }} \]
-                            </div>
-                            <p class="formula-subtext">{{ method.formula_explanation | safe }}</p>
-                            {% if method.standard_error_formula and method.standard_error_formula.startswith('SE') %}
-                            <p style="margin-top: 5px;"><strong>Error Estándar:</strong> \( {{ method.standard_error_formula }} \)</p>
-                            {% endif %}
-                            {% if method.degrees_of_freedom_formula %}
-                            <div style="margin-top: 8px;">
-                                <strong>Grados de Libertad (Welch-Satterthwaite):</strong>
-                                <div class="formula-box" style="margin: 5px 0;">
-                                    \[ {{ method.degrees_of_freedom_formula }} \]
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="theory-section-block">
-                            <h4>🔒 Intervalo de Confianza Asociado ({(1 - α) * 100}%)</h4>
-                            <div class="formula-box">
-                                \[ {{ method.confidence_interval_formula }} \]
-                            </div>
-                            <p class="formula-subtext">{{ method.confidence_interval_note }}</p>
-                        </div>
-
-                        <div class="theory-section-block">
-                            <h4>🚦 Regla de Decisión</h4>
-                            <p>{{ method.decision_rule }}</p>
-                        </div>
-
-                        <div class="example-box">
-                            <strong>💡 Ejemplo Práctico:</strong>
-                            <p style="margin: 5px 0 0 0;">{{ method.example }}</p>
-                        </div>
-
-                        <button type="button" class="btn-use-method" onclick="useMethod('{{ method.id }}')">
-                            🚀 Usar este método en la calculadora
-                        </button>
-                    </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-        </div>
-
     </div>
 
     <script>
         function switchTab(tabName) {
             var tabHipotesis = document.getElementById('tab_hipotesis');
+            var tabIdentificar = document.getElementById('tab_identificar');
             var tabHerramientas = document.getElementById('tab_herramientas');
-            var tabTeoria = document.getElementById('tab_teoria');
             
             var btnHipotesis = document.getElementById('btn_hipotesis');
+            var btnIdentificar = document.getElementById('btn_identificar');
             var btnHerramientas = document.getElementById('btn_herramientas');
-            var btnTeoria = document.getElementById('btn_teoria');
 
             if (tabHipotesis) tabHipotesis.style.display = (tabName === 'hipotesis') ? 'block' : 'none';
+            if (tabIdentificar) tabIdentificar.style.display = (tabName === 'identificar') ? 'block' : 'none';
             if (tabHerramientas) tabHerramientas.style.display = (tabName === 'herramientas') ? 'block' : 'none';
-            if (tabTeoria) tabTeoria.style.display = (tabName === 'teoria') ? 'block' : 'none';
             
             if (btnHipotesis) btnHipotesis.className = (tabName === 'hipotesis') ? 'tab-btn active' : 'tab-btn';
+            if (btnIdentificar) btnIdentificar.className = (tabName === 'identificar') ? 'tab-btn active' : 'tab-btn';
             if (btnHerramientas) btnHerramientas.className = (tabName === 'herramientas') ? 'tab-btn active' : 'tab-btn';
-            if (btnTeoria) btnTeoria.className = (tabName === 'teoria') ? 'tab-btn active' : 'tab-btn';
-
-            if (tabName === 'teoria' && window.MathJax && window.MathJax.typesetPromise) {
-                window.MathJax.typesetPromise();
-            }
         }
 
         function useMethod(methodId) {
@@ -313,63 +272,6 @@
                 showForm();
             }
             window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-
-        var currentFilterTag = 'all';
-
-        function setFilter(tag) {
-            currentFilterTag = tag;
-            var filterBtns = document.querySelectorAll('.filter-tag');
-            filterBtns.forEach(function(btn) {
-                btn.classList.remove('active');
-            });
-            var activeBtn = document.getElementById('filter_tag_' + tag);
-            if (activeBtn) activeBtn.classList.add('active');
-            filterTheory();
-        }
-
-        function filterTheory() {
-            var searchInput = document.getElementById('theory_search');
-            var query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            var cards = document.querySelectorAll('.theory-card');
-            var conceptsSection = document.getElementById('section_conceptos');
-            var methodsSection = document.getElementById('section_metodos');
-
-            // Visibilidad de conceptos
-            if (currentFilterTag === 'all' || currentFilterTag === 'conceptos') {
-                if (conceptsSection) conceptsSection.style.display = 'block';
-            } else {
-                if (conceptsSection) conceptsSection.style.display = 'none';
-            }
-
-            // Visibilidad de métodos
-            if (currentFilterTag === 'conceptos') {
-                if (methodsSection) methodsSection.style.display = 'none';
-            } else {
-                if (methodsSection) methodsSection.style.display = 'block';
-            }
-
-            cards.forEach(function(card) {
-                var dist = (card.getAttribute('data-dist') || '').toLowerCase();
-                var tagMatch = false;
-
-                if (currentFilterTag === 'all') {
-                    tagMatch = true;
-                } else if (currentFilterTag === 'Z' && dist.includes('normal')) {
-                    tagMatch = true;
-                } else if (currentFilterTag === 't' && dist.includes('student')) {
-                    tagMatch = true;
-                } else if (currentFilterTag === 'chi' && dist.includes('chi')) {
-                    tagMatch = true;
-                } else if (currentFilterTag === 'F' && dist.includes('fisher')) {
-                    tagMatch = true;
-                }
-
-                var text = card.innerText.toLowerCase();
-                var textMatch = (query === '' || text.includes(query));
-
-                card.style.display = (tagMatch && textMatch) ? 'block' : 'none';
-            });
         }
 
         function calcTools() {
@@ -407,29 +309,6 @@
         }
 
         window.onload = function() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var initialTab = "{{ initial_tab|default('hipotesis') }}";
-            var paramTab = urlParams.get('tab') || initialTab;
-            var hash = window.location.hash;
-            var methodParam = "{{ selected_method|default('') }}" || urlParams.get('method');
-
-            if (paramTab === 'teoria' || (hash && hash.startsWith('#teoria'))) {
-                switchTab('teoria');
-                if (methodParam || (hash && hash.includes('_'))) {
-                    var targetId = methodParam ? ('teoria_' + methodParam) : hash.replace('#', '');
-                    setTimeout(function() {
-                        var targetEl = document.getElementById(targetId);
-                        if (targetEl) {
-                            targetEl.scrollIntoView({behavior: 'smooth', block: 'center'});
-                        }
-                    }, 400);
-                }
-            } else if (paramTab === 'herramientas') {
-                switchTab('herramientas');
-            } else {
-                switchTab('hipotesis');
-            }
-
             showForm();
         }
     </script>

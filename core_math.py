@@ -15,10 +15,11 @@ def integrate(f, a, b, n=2000):
     return (s * h) / 3
 
 def norm_cdf(z):
-    """CDF de la Distribución Normal Estándar usando la Función de Error"""
+    """CDF de la Distribución Normal Estándar"""
     return 0.5 * (1 + math.erf(z / math.sqrt(2)))
+
 def t_pdf(t, df):
-    """PDF de la Distribución T-Student (cálculo logarítmico contra overflow)"""
+    """PDF de la Distribución T-Student"""
     log_num = math.lgamma((df + 1) / 2)
     log_den = 0.5 * math.log(df * math.pi) + math.lgamma(df / 2)
     log_term = - ((df + 1) / 2) * math.log(1 + (t**2)/df)
@@ -63,13 +64,10 @@ def f_cdf(x, df1, df2):
     if x <= 0: return 0
     return integrate(lambda val: f_pdf(val, df1, df2), 1e-8, x, n=max(2000, int(x*20)))
 
-# ==========================================
-# CÁLCULO DE VALORES CRÍTICOS (INVERSAS / PPF)
-# ==========================================
+# CÁLCULO DE VALORES CRÍTICOS
 
 def _bisection(cdf_func, target_prob, low, high):
-    """Encuentra la raíz de cdf_func(x) = target_prob (Algoritmo numérico de Bisección)"""
-    # Expandir el límite si es necesario para distribuciones que van a infinito
+    """Encuentra la raíz de cdf_func(x) = target_prob """
     while cdf_func(high) < target_prob:
         high *= 2.0
     
@@ -85,16 +83,14 @@ def _bisection(cdf_func, target_prob, low, high):
     return (low + high) / 2.0
 
 def norm_ppf(p):
-    """Inversa de la CDF Normal (Z)"""
     return _bisection(norm_cdf, p, -10.0, 10.0)
 
 def t_ppf(p, df):
-    """Inversa de la CDF T-Student (t crítico)"""
     return _bisection(lambda t: t_cdf(t, df), p, -50.0, 50.0)
 
 def chi2_ppf(p, df):
-    """Inversa de la CDF Chi-Cuadrada (Chi2 crítico)"""
-    return _bisection(lambda x: chi2_cdf(x, df), p, 1e-5, float(df) * 3.0 + 10.0)
+    """Inversa de la CDF Chi-Cuadrada (Chi² crítico)"""
+    return _bisection(lambda x: chi2_cdf(x, df), p, 1e-5, max(10.0, df * 2.0))
 
 def f_ppf(p, df1, df2):
     """Inversa de la CDF F de Fisher (F crítico)"""

@@ -53,13 +53,8 @@
                 <p>{{ result.conclusion | safe }}</p>
             </div>
 
-            <div class="actions actions-group">
+            <div class="actions">
                 <a href="/" class="btn">Realizar otro cálculo</a>
-                {% if result.method_id %}
-                    <a href="/teoria?method={{ result.method_id }}#teoria_{{ result.method_id }}" class="btn btn-secondary">📖 Ver Teoría de este Método</a>
-                {% else %}
-                    <a href="/teoria" class="btn btn-secondary">📖 Diccionario de Teoría</a>
-                {% endif %}
             </div>
         {% endif %}
     </div>
